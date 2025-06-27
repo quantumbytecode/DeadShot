@@ -1,47 +1,26 @@
-🔫 DeadShot – Smart Request Logging & Replay for Debugging APIs
-DeadShot is a lightweight logging API designed to capture, store, and replay HTTP request/response cycles to help developers debug issues faster and with full context.
+# DeadShot 🎯  
+### **Smart HTTP Request Logging & Replay for Debugging APIs**  
 
-It acts as a centralized receiver for logs sent from different services via SDKs (currently available in Go and C#). You can log:
+[![Go Version](https://img.shields.io/badge/Go-1.20%2B-blue)](https://golang.org/) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT) 
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/quantumbytecode/DeadShot/pulls)  
 
-Full request metadata (headers, query params, body)
+A lightweight **logging API** designed to capture, store, and replay HTTP request/response cycles for effortless debugging. Perfect for diagnosing production issues with full context.  
 
-Responses (headers, body, status code)
+---
 
-Tags, source system info, error details
+## ✨ **Features**  
+✅ **Full Request/Response Logging** – Headers, query params, body, status codes  
+✅ **Request Replay** – Reproduce bugs instantly by replaying captured traffic  
+✅ **Multi-SDK Support** – Go and C# SDKs (more coming soon!)  
+✅ **Centralized Logging** – Send logs to a single DeadShot instance for all services  
+✅ **Error Context** – Attach custom tags, source system info, and error details  
 
-And later replay these requests for easier reproduction and debugging
+---
 
-🚀 Features
-✅ Centralized log ingestion via API
+## 🚀 **Quick Start**  
 
-✅ Replay captured HTTP requests
-
-✅ Lightweight SDKs (Go, C#) to integrate in seconds
-
-✅ Ideal for debugging production and staging issues
-
-📦 How It Works
-Your app uses the DeadShot SDK to send detailed HTTP logs to the DeadShot API.
-
-DeadShot stores the logs with metadata.
-
-You can search or replay logged requests later via DeadShot's interface or endpoint.
-
-
-import deadshot "github.com/quantumbytecode/DeadShotGoLib"
-
-log := deadshot.LogModel{
-	Method:     "POST",
-	URL:        "/api/login",
-	Headers:    "Authorization: Bearer ...",
-	Body:       `{"user":"hamid"}`,
-	StatusCode: 500,
-	Source:     "AuthService",
-	Error:      "Invalid credentials",
-}
-
-client := deadshot.DeadShot{
-	EndPoint: "http://deadshot.yourdomain.com/log",
-}
-
-_ = client.Send(log)
+### **1. Install the SDK**  
+```sh
+# Go SDK
+go get github.com/quantumbytecode/DeadShotGoLib
