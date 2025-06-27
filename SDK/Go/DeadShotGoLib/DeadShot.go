@@ -1,4 +1,4 @@
-package deadshotgopkg
+package deadshotgolib
 
 import (
 	"encoding/json"
