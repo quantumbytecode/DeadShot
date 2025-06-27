@@ -24,3 +24,22 @@ A lightweight **logging API** designed to capture, store, and replay HTTP reques
 ```sh
 # Go SDK
 go get github.com/quantumbytecode/DeadShotGoLib
+
+
+import deadshot "github.com/quantumbytecode/DeadShotGoLib"
+
+log := deadshot.LogModel{
+  Method:     "POST",
+  URL:        "/api/login",
+  Headers:    "Authorization: Bearer ...",
+  Body:       `{"user":"hanizit"}`,
+  StatusCode: 500,
+  Source:     "AuthService",
+  Error:      "Invalid credentials",
+}
+
+client := deadshot.DeadShot{
+  EndPoint: "http://deadshot.yourdomain.com/log",
+}
+
+_ = client.Send(log)
