@@ -5,6 +5,7 @@ import (
 	"deadshot/internal/persistence"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
@@ -114,12 +115,18 @@ func (s *SqlliteDeadshotService) ReplayLog(id int) error {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		incerr := s.IncreaseRequestCount(id)
-		if incerr != nil {
-			logrus.Error("Error increasing request count:" + incerr.Error())
-			return incerr
-		}
+	log.Replayed = true
+	bodyIO, _ := io.ReadAll(resp.Body)
+	bodyJs, _ := json.Marshal(bodyIO)
+	log.ResponseBody = string(bodyJs)
+	respHeaderJs, _ := json.Marshal(resp.Header)
+	log.ResponseHeaders = string(respHeaderJs)
+	log.StatusCode = resp.StatusCode
+	log.Source = resp.Request.Host
+
+	updateErr := s.UpdateLog(log)
+	if updateErr != nil {
+		return updateErr
 	}
 
 	return nil
