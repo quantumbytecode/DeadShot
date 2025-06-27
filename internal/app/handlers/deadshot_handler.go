@@ -23,7 +23,7 @@ func NewDeadshotHandler(s *services.SqlliteDeadshotService) *DeadshotHandler {
 
 func (d *DeadshotHandler) CaptureLog(res http.ResponseWriter, req *http.Request) {
 
-	res.Header().Add("Content-Type", "aspplication/json")
+	res.Header().Set("Content-Type", "aspplication/json")
 
 	body, err := io.ReadAll(req.Body)
 
@@ -35,6 +35,7 @@ func (d *DeadshotHandler) CaptureLog(res http.ResponseWriter, req *http.Request)
 		}
 		e, _ := json.Marshal(response)
 		res.Write(e)
+		return
 	}
 
 	var log models.LogModel
@@ -49,6 +50,7 @@ func (d *DeadshotHandler) CaptureLog(res http.ResponseWriter, req *http.Request)
 		}
 		e, _ := json.Marshal(response)
 		res.Write(e)
+		return
 	}
 
 	inErr := d.Service.InsertLog(&log)
@@ -69,8 +71,8 @@ func (d *DeadshotHandler) CaptureLog(res http.ResponseWriter, req *http.Request)
 		Message: "200",
 		Data:    nil,
 	}
-	e, _ := json.Marshal(response)
-	res.Write(e)
+	resp, _ := json.Marshal(response)
+	res.Write(resp)
 	logrus.Info("Log captured")
 }
 
@@ -90,33 +92,41 @@ func (d *DeadshotHandler) GetAllLogs(res http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	e, _ := json.Marshal(logs)
-	res.Write(e)
+	res.WriteHeader(http.StatusOK)
+	response := models.DeadShotResponse{
+		Message: "200",
+		Data:    logs,
+	}
+	resp, _ := json.Marshal(response)
+	res.Write(resp)
 	logrus.Info("Logs retrieved")
 }
 
 func (d *DeadshotHandler) GetLogByID(res http.ResponseWriter, req *http.Request) {
-	res.Header().Add("Content-Type", "aspplication/json")
+	res.Header().Set("Content-Type", "application/json")
 
 	id := req.URL.Query().Get("id")
-
 	i, err := strconv.Atoi(id)
-
-	log, err := d.Service.GetLogById(i)
-
 	if err != nil {
-		res.WriteHeader(http.StatusInternalServerError)
-		response := models.DeadShotResponse{
-			Message: "Could not get log",
-			Data:    nil,
-		}
-		e, _ := json.Marshal(response)
-		res.Write(e)
+		http.Error(res, "Invalid ID", http.StatusBadRequest)
 		return
 	}
 
-	e, _ := json.Marshal(log)
-	res.Write(e)
+	log, err := d.Service.GetLogById(i)
+	if err != nil {
+		res.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(res).Encode(models.DeadShotResponse{
+			Message: "Could not get log",
+			Data:    nil,
+		})
+		return
+	}
+
+	json.NewEncoder(res).Encode(models.DeadShotResponse{
+		Message: "Log found",
+		Data:    log,
+	})
+
 	logrus.Info("Log retrieved")
 }
 
@@ -156,8 +166,8 @@ func (d *DeadshotHandler) DeleteLog(res http.ResponseWriter, req *http.Request) 
 		Message: "200",
 		Data:    nil,
 	}
-	e, _ := json.Marshal(response)
-	res.Write(e)
+	resp, _ := json.Marshal(response)
+	res.Write(resp)
 	logrus.Info("Log deleted")
 }
 
@@ -208,8 +218,8 @@ func (d *DeadshotHandler) UpdateLog(res http.ResponseWriter, req *http.Request) 
 		Message: "200",
 		Data:    nil,
 	}
-	e, _ := json.Marshal(response)
-	res.Write(e)
+	resp, _ := json.Marshal(response)
+	res.Write(resp)
 	logrus.Info("Log updated")
 }
 
@@ -243,4 +253,13 @@ func (d *DeadshotHandler) ReplayLog(res http.ResponseWriter, req *http.Request) 
 		res.Write(e)
 		return
 	}
+
+	res.WriteHeader(http.StatusOK)
+	response := models.DeadShotResponse{
+		Message: "200",
+		Data:    nil,
+	}
+	resp, _ := json.Marshal(response)
+	res.Write(resp)
+	logrus.Info("Request replayed")
 }

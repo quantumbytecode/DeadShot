@@ -13,9 +13,8 @@ type LogModel struct {
 	StatusCode      int       `json:"status_code" db:"status_code"`
 	ResponseHeaders string    `json:"response_headers" db:"response_headers"`
 	ResponseBody    string    `json:"response_body" db:"response_body"`
-	Tags            string    `json:"tags" db:"tags"`                     // Comma-separated or JSON
-	Source          string    `json:"source" db:"source"`                 // App/service name
-	Replayed        bool      `json:"replayed" db:"replayed"`             // Was this already replayed?
-	ReplayedCount   int       `json:"replayed_count" db:"replayed_count"` // Was this already replayed?
-	Error           string    `json:"error" db:"error"`                   // Error info, if any
+	Tags            string    `json:"tags" db:"tags"`         // Comma-separated or JSON
+	Source          string    `json:"source" db:"source"`     // App/service name
+	Replayed        bool      `json:"replayed" db:"replayed"` // Was this already replayed?
+	Error           string    `json:"error" db:"error"`       // Error info, if any
 }
